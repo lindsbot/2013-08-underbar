@@ -27,6 +27,17 @@ var _ = { };
   // Like first, but for the last elements. If n is undefined, return just the
   // last element.
   _.last = function(array, n) {
+    if (n != undefined){
+      if (n < array.length){
+          return array.splice(array.length-n, array.length-1);
+        }
+      else {
+          return array;
+      }
+    }
+    else {
+      return array[array.length - 1];
+    }
   };
 
   // Call iterator(value, key, collection) for each element of collection.
@@ -44,6 +55,8 @@ var _ = { };
 
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, iterator) {
+
+
   };
 
   // Return all elements of an array that don't pass a truth test.
