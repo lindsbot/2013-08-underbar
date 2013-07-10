@@ -128,12 +128,25 @@ var _ = { };
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array) {
+    var len = array.length,
+        uniqArray = [],
+        match;
+
+        for (var i = 0; i < len; i++) {
+          match = undefined;
+          for (var j = 0; j < uniqArray.length; j++) {
+            if (array[i] === uniqArray[j]){
+              match = true;
+              break;
+            }
+          }
+          if (!match) {
+            uniqArray.push(array[i]);
+          }
+        }
 
 
-
-
-
-
+    return uniqArray;
 
   };
 
@@ -151,7 +164,7 @@ var _ = { };
     });
 
     return newArray;
-    
+
   };
 
   /*
@@ -174,6 +187,11 @@ var _ = { };
 
   // Calls the method named by methodName on each value in the list.
   _.invoke = function(list, methodName, args) {
+
+
+
+
+
   };
 
   // Reduces an array or object to a single value by repetitively calling
