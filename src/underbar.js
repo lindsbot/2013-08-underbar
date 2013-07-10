@@ -99,11 +99,9 @@ var _ = { };
     var results = [];
 
     _.each(collection, function(value, key, collection){
-
       if (iterator(collection[key])){
         results.push(value);
       }
-
     });
 
     return results;
@@ -114,6 +112,18 @@ var _ = { };
   _.reject = function(collection, iterator) {
     // TIP: see if you can re-use _.select() here, without simply
     // copying code in and modifying it
+
+    var results = [];
+
+    _.each(collection, function(value, key, collection){
+      if (!iterator(collection[key])){
+        results.push(value);
+      }
+    });
+
+    return results;
+
+
   };
 
   // Produce a duplicate-free version of the array.
