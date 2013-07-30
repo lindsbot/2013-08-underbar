@@ -180,34 +180,23 @@ var _ = { };
     // TIP: map is really handy when you want to transform an array of
     // values into a new array of values. _.pluck() is solved for you
     // as an example of this.
-    return _.map(array, function(value){
+    return _.map(array, function(value) {
       return value[propertyName];
     });
   };
 
   // Calls the method named by methodName on each value in the list.
   _.invoke = function(list, methodName, args) {
-
-    var results = [];
-
-    if (args) {
-      _.each(list, function(value, key, collection){
-          this.methodName = methodName;
-          results.push(methodName.call(value, args));
-      });
-
-    }
-
-    else {
-      _.each(list, function(value, key, collection){
-        this.methodName = methodName;
-        results.push(methodName.call(value));
-
-      });
-
-    }
-
-    return results;
+    return _.map(list, function(element) {
+      // var method = (methodName === 'function') ? methodName : element[methodName];
+      var method;
+      if (typeof methodName === 'function') {
+        method = methodName;
+      } else { 
+        method = element[methodName];
+      }
+      return method.apply(element, args);
+    });
   };
 
   // Reduces an array or object to a single value by repetitively calling
@@ -224,6 +213,19 @@ var _ = { };
   //   }, 0); // should be 6
   //
   _.reduce = function(collection, iterator, initialValue) {
+    var previousValue = 0;
+    if (initialValue) {
+      previousValue = initialValue;
+    }
+
+    _.each(collection, function(value){
+      return previousValue = iterator(previousValue, value);
+    });
+
+    return previousValue;
+
+
+
   };
 
   // Determine if the array or object contains a given value (using `===`).
@@ -242,12 +244,36 @@ var _ = { };
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
+    var truthTest = true;
+    if (collection.length == 0) {truthTest = true;} 
+    else if (!iterator) {truthTest = true;}
+    else {
+      for (var i = 0; i < collection.length; i++) {
+        if (!iterator(collection[i])) {
+          return truthTest = false;
+          break;
+        }
+      }
+    }
+    return truthTest;
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
+    var truthTest = false;
+    if (!iterator) {iterator = _.contains}
+
+    for (var i = 0; i < collection.length; i++) {
+      if (iterator(collection[i])) {
+        truthTest = true;
+
+      }
+    }
+
+    return truthTest;
+
   };
 
 
@@ -270,6 +296,17 @@ var _ = { };
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+
+
+      _.each(arguments, function(key, value) {
+        obj.key = value;
+      });
+      return obj;
+
+
+
+
+
   };
 
   // Like extend, but doesn't ever overwrite a key that already
@@ -315,7 +352,29 @@ var _ = { };
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var memory = {};
+    return function() {
+      var args = JSON.stringify(arguments);
+      if (memory[args]) {
+        return memory[args];
+      } else {
+        return memory[args] = func.apply(this, arguments);
+      }
+    };
   };
+
+  // EXAMPLE ZONE
+  // var adder = function(a, b) {
+  //   return a + b;
+  // };
+
+  // adder(1, 2); // 3
+  // adder(1, 2); // 3
+
+  // var memoAdder = _.memoize(adder);
+  // memoAdder(1, 2); // computes 3
+  // memoAdder(1, 2); // doesn't run the computation, but returns 3
+  // END EXAMPLE ZONE
 
   // Delays a function for the given number of milliseconds, and then calls
   // it with the arguments supplied.
@@ -324,8 +383,21 @@ var _ = { };
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
-  };
 
+    return window.setTimeout(function() {
+      if (arguments) {
+        func(arguments);
+      }
+      else {
+        func();
+      }
+
+    }, wait);
+
+
+
+
+  };
 
   /**
    * ADVANCED COLLECTION OPERATIONS
@@ -334,6 +406,21 @@ var _ = { };
 
   // Shuffle an array.
   _.shuffle = function(array) {
+
+    var newArray = [],
+        indices = [];
+
+    _.each(array, function(item, index) {
+      indices.push(index);
+    });
+
+    _.each(indices, function(item){
+      newArray.push(array[indices.splice(Math.floor(Math.random() * indices.length), 1)]);
+
+    })
+
+    return newArray;
+
   };
 
 
