@@ -406,12 +406,11 @@ var _ = { };
   _.delay = function(func, wait) {
     var args = Array.prototype.slice.apply(arguments).slice(2);
     window.setTimeout(function() {
-      
       if (args.length === 0) {
         func();
       }
       else {
-        func(args);
+        func.apply(this, args);
       }
 
     }, wait);
