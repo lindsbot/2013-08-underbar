@@ -263,12 +263,14 @@ var _ = { };
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
     var truthTest = false;
-    if (!iterator) {iterator = _.contains}
+    if (!iterator) {iterator = function(value) {
+      if (value) {return true;}
+    }}
 
     for (var i = 0; i < collection.length; i++) {
       if (iterator(collection[i])) {
         truthTest = true;
-
+        break;
       }
     }
 
@@ -296,22 +298,41 @@ var _ = { };
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    var args = Array.prototype.slice.apply(arguments).slice(1);
 
+    var mergeObjects = function(obj1, obj2) {
+      for (var prop in obj2) {
+        obj1[prop] = obj2[prop];
+      }
+    }
 
-      _.each(arguments, function(key, value) {
-        obj.key = value;
-      });
-      return obj;
+    _.each(args, function(argObj) {
+      mergeObjects(obj, argObj);
+    });
 
-
-
-
-
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    var args = Array.prototype.slice.apply(arguments).slice(1);
+
+    var mergeObjects = function(obj1, obj2) {
+      for (var prop in obj2) {
+        if (obj1[prop] == undefined) {
+          obj1[prop] = obj2[prop];
+        }
+      }
+    }
+
+    _.each(args, function(argObj) {
+      mergeObjects(obj, argObj);
+    });
+
+    return obj;
+
+
   };
 
 
@@ -383,13 +404,14 @@ var _ = { };
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
-
-    return window.setTimeout(function() {
-      if (arguments) {
-        func(arguments);
+    var args = Array.prototype.slice.apply(arguments).slice(2);
+    window.setTimeout(function() {
+      
+      if (args.length === 0) {
+        func();
       }
       else {
-        func();
+        func(args);
       }
 
     }, wait);
@@ -416,7 +438,6 @@ var _ = { };
 
     _.each(indices, function(item){
       newArray.push(array[indices.splice(Math.floor(Math.random() * indices.length), 1)]);
-
     })
 
     return newArray;
